@@ -1,0 +1,35 @@
+package main
+
+import (
+	"fmt"
+	"strings"
+	"testing"
+  "github.com/stretchr/testify/assert"
+)
+
+// TestMailYakStringer ensures MailYak struct conforms to the Stringer interface.
+func TestMailYakStringer(t *testing.T) {
+	t.Parallel()
+  info := SMTPInfo{Address: "mail.host.com", Port: 25, UserLogin: "user", Password: "pass", Authentication: "plain"}
+  info.expand()
+  
+	mail := NewMail(&info) //"mail.host.com:25", smtp.PlainAuth("", "user", "pass", "mail.host.com"))
+	mail.From("from@example.org")
+	mail.FromName("From Example")
+	mail.To("to@example.org")
+	mail.Bcc("bcc1@example.org", "bcc2@example.org")
+	mail.Subject("Test subject")
+	mail.ReplyTo("replies@example.org")
+	mail.HTML().Set("HTML part: this is just a test.")
+	mail.Plain().Set("Plain text part: this is also just a test.")
+	mail.Attach("test.html", strings.NewReader("<html><head></head></html>"))
+	mail.Attach("test2.html", strings.NewReader("<html><head></head></html>"))
+
+	mail.AddHeader("Precedence", "bulk")
+
+	mail.date = "a date"
+
+	want := "&MailYak{date: \"a date\", from: \"from@example.org\", fromName: \"From Example\", html: 31 bytes, plain: 42 bytes, toAddrs: [to@example.org], bccAddrs: [bcc1@example.org bcc2@example.org], subject: \"Test subject\", Precedence: \"bulk\", host: \"mail.host.com:25\", attachments (2): [{filename: test.html} {filename: test2.html}], auth set: true}"
+	got := fmt.Sprintf("%+v", mail)
+  assert.Equal(t, want, got)
+}

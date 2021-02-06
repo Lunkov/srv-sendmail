@@ -1,0 +1,17 @@
+.env
+etc4test
+src/*.txt
+src/region-reaper
+src/*.log
+src/*.log.*
+.ssh/
+*.out
+*.log
+*.log.*
+service
+web-service
+web-service.ERROR
+web-service.INFO
+web-service.WARNING
+*.test.INFO
+*.test.ERROR
